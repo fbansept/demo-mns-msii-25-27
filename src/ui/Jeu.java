@@ -1,6 +1,7 @@
 package ui;
 
 import ui.model.Sprite;
+import ui.model.Vaisseau;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.*;
 public class Jeu extends Canvas {
 
     protected JFrame fenetre = new JFrame("Space Invaders");
+    protected Vaisseau vaisseau;
 
     public Jeu () throws InterruptedException {
 
@@ -37,6 +39,7 @@ public class Jeu extends Canvas {
     public void demarrer () throws InterruptedException {
 
         int iteration = 0;
+        vaisseau = new Vaisseau(400, 500);
 
         while (true) {
 
@@ -46,9 +49,12 @@ public class Jeu extends Canvas {
             dessin.setColor(Color.WHITE);
             dessin.fillRect(0, 0, 800, 600);
 
-
-            dessin.setColor(Color.RED);
-            dessin.fillRect(iteration, 500, 100, 30);
+            dessin.setColor(vaisseau.getCouleur());
+            dessin.fillRect(
+                    vaisseau.getX(),
+                    vaisseau.getY(),
+                    vaisseau.getLargeur(),
+                    vaisseau.getHauteur());
 
             //----
 
