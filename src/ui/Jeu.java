@@ -1,15 +1,26 @@
 package ui;
 
-import ui.model.Sprite;
+import ui.model.Ennemi;
 import ui.model.Vaisseau;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Jeu extends Canvas {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Jeu extends Canvas implements KeyListener {
 
     protected JFrame fenetre = new JFrame("Space Invaders");
+
     protected Vaisseau vaisseau;
+    protected List<Ennemi> ennemis;
+
+    protected boolean qPresssed = false;
+    protected boolean dPresssed = false;
+    protected boolean spacePresssed = false;
 
     public Jeu () throws InterruptedException {
 
@@ -31,6 +42,8 @@ public class Jeu extends Canvas {
         this.fenetre.setResizable(false);
         this.fenetre.setVisible(true);
 
+        this.fenetre.addKeyListener(this);
+
         this.createBufferStrategy(2);
 
         this.demarrer();
@@ -40,6 +53,10 @@ public class Jeu extends Canvas {
 
         int iteration = 0;
         vaisseau = new Vaisseau(400, 500);
+        ennemis = new ArrayList<>();
+
+        //TODO : ajouter des ennemis a la liste (boucle imbriqué pour les geénérer
+        // sous forme de bloc de 10 x 4 ennemis)
 
         while (true) {
 
@@ -49,12 +66,19 @@ public class Jeu extends Canvas {
             dessin.setColor(Color.WHITE);
             dessin.fillRect(0, 0, 800, 600);
 
-            dessin.setColor(vaisseau.getCouleur());
-            dessin.fillRect(
-                    vaisseau.getX(),
-                    vaisseau.getY(),
-                    vaisseau.getLargeur(),
-                    vaisseau.getHauteur());
+            vaisseau.dessiner(dessin);
+
+            //TODO : effectuer un mouvement a gauche et a droite
+            // si le vaisseau n'a pas dépasser l'écran
+
+            //TODO : créer la classe Rond et la classe Projectile qui en hérite
+
+            //TODO : créer un projectile lorsque l'on appuie sur espace
+
+            //TODO : si un ennemi est en collision avec un projectile :
+            // - on supprime ce projectile
+            // - l'ennemi perd une vie et change de couleur
+
 
             //----
 
@@ -70,4 +94,34 @@ public class Jeu extends Canvas {
         new Jeu();
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_Q) {
+            qPresssed = true;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_D) {
+            dPresssed = true;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spacePresssed = true;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_Q) {
+            qPresssed = false;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_D) {
+            dPresssed = false;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spacePresssed = false;
+        }
+    }
 }

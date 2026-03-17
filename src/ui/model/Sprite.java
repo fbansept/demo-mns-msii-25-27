@@ -14,6 +14,8 @@ public abstract class Sprite {
         this.couleur = couleur;
     }
 
+    public abstract void dessiner(Graphics2D dessin);
+
     public int getX() {
         return x;
     }
