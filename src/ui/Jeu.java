@@ -1,6 +1,7 @@
 package ui;
 
 import ui.model.Ennemi;
+import ui.model.Projectile;
 import ui.model.Vaisseau;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ public class Jeu extends Canvas implements KeyListener {
 
     protected Vaisseau vaisseau;
     protected List<Ennemi> ennemis;
+    protected List<Projectile> projectiles;
 
     protected boolean qPresssed = false;
     protected boolean dPresssed = false;
@@ -54,9 +56,18 @@ public class Jeu extends Canvas implements KeyListener {
         int iteration = 0;
         vaisseau = new Vaisseau(400, 500);
         ennemis = new ArrayList<>();
+        projectiles = new ArrayList<>();
 
-        //TODO : ajouter des ennemis a la liste (boucle imbriqué pour les geénérer
-        // sous forme de bloc de 10 x 4 ennemis)
+        //ajouter des ennemis a la liste (boucle imbriqué pour les générer
+        //sous forme de bloc de 10 x 4 ennemis)
+        for(int indexLigne = 0; indexLigne < 4 ; indexLigne ++ ) {
+            for(int indexColonne= 0; indexColonne < 10 ; indexColonne ++ ) {
+                Ennemi ennemi = new Ennemi(indexColonne * 40 + 20, indexLigne * 30);
+                ennemis.add(ennemi);
+            }
+        }
+
+        int iterationDepuisDernierTir = 0;
 
         while (true) {
 
@@ -68,17 +79,53 @@ public class Jeu extends Canvas implements KeyListener {
 
             vaisseau.dessiner(dessin);
 
-            //TODO : effectuer un mouvement a gauche et a droite
-            // si le vaisseau n'a pas dépasser l'écran
+            for(Ennemi ennemi : ennemis) {
+                ennemi.dessiner(dessin);
+            }
 
-            //TODO : créer la classe Rond et la classe Projectile qui en hérite
+            for(Projectile projectile : projectiles) {
+                projectile.dessiner(dessin);
+            }
 
-            //TODO : créer un projectile lorsque l'on appuie sur espace
+            //effectuer un mouvement a gauche et a droite
+            //si le vaisseau n'a pas dépasser l'écran
+            if(qPresssed) {
+                vaisseau.deplacement(-5);
+            } else if(dPresssed) {
+                vaisseau.deplacement(5);
+            }
 
-            //TODO : si un ennemi est en collision avec un projectile :
-            // - on supprime ce projectile
-            // - l'ennemi perd une vie et change de couleur
+            if(spacePresssed && iterationDepuisDernierTir > 30) {
+                iterationDepuisDernierTir = 0;
+                projectiles.add(new Projectile(vaisseau.getX() + vaisseau.getLargeur() /2, vaisseau.getY()));
+            }
 
+            List<Projectile> projectilesAsupprimer = new ArrayList<>();
+            List<Ennemi> ennemisAsupprimer = new ArrayList<>();
+
+            for(Projectile projectile : projectiles) {
+                projectile.deplacement();
+                for(Ennemi ennemi : ennemis) {
+                    if(projectile.testColision(ennemi)) {
+
+                        //si l'ennemi n'a plus de vie
+                        if(!ennemi.diminuerVie()) {
+                            ennemisAsupprimer.add(ennemi);
+                        }
+                        projectilesAsupprimer.add(projectile);
+                        //Note : projectiles.remove(projectile); impossible durant le parcours de la liste
+                    }
+                }
+            }
+
+            //on enleve de la liste les projectile a supprimer
+            for(Projectile projectile : projectilesAsupprimer) {
+                projectiles.remove(projectile);
+            }
+            //on enleve de la liste les ennemi a supprimer
+            for(Ennemi ennemi : ennemisAsupprimer) {
+                ennemis.remove(ennemi);
+            }
 
             //----
 
@@ -87,6 +134,7 @@ public class Jeu extends Canvas implements KeyListener {
 
             Thread.sleep(1000 / 60);
             iteration ++;
+            iterationDepuisDernierTir ++;
         }
     }
 
